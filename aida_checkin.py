@@ -143,6 +143,21 @@ def get_id_token():
     return exchange_token(code, v)
 
 
+def decode_id_token(token):
+    """解码 JWT id_token，提取 claims"""
+    try:
+        parts = token.split(".")
+        if len(parts) != 3:
+            return {}
+        payload = parts[1]
+        padding = 4 - len(payload) % 4
+        if padding != 4:
+            payload += "=" * padding
+        return json.loads(base64.urlsafe_b64decode(payload))
+    except Exception:
+        return {}
+
+
 def api_call(method, path, auth_token, body=None):
     """Generic API call, returns (body, http_code)"""
     args = ["-w", "\n%{http_code}"]
@@ -183,6 +198,13 @@ def main():
         sys.exit(1)
     print("✅ Token 获取成功")
 
+    # 解码获取账号信息
+    claims = decode_id_token(id_token)
+    email = claims.get("email", "")
+    username = claims.get("username", "") or claims.get("name", "")
+    masked_email = email[:3] + "***" + email[email.find("@"):] if "@" in email else email
+    print(f"👤 账号: {username} ({masked_email})")
+
     # 获取服务器
     body, code = api_call("GET", "/servers", id_token)
     if code != 200:
@@ -221,6 +243,9 @@ def main():
     # Telegram 通知
     ok = sum(1 for r in results if r[1])
     lines = ["🇯🇵 Aida 续期通知", ""]
+    if masked_email:
+        lines.append(f"👤 {username} ({masked_email})")
+        lines.append("")
     for name, success, extra in results:
         icon = "✅" if success else "❌"
         lines.append(f"{icon} [{name}] {'续期成功' if success else f'失败: {extra}'}")
