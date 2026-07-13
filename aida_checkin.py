@@ -21,6 +21,7 @@ AIDA_SESSION_TOKEN = os.getenv("AIDA_SESSION_TOKEN", "")
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN", "")
 TG_CHAT_ID = os.getenv("TG_CHAT_ID", "")
 SOCKS5_PROXY = os.getenv("SOCKS5_PROXY", "")
+AIDA_SESSION_EXPIRY = os.getenv("AIDA_SESSION_EXPIRY", "")  # ISO 格式，如 2026-07-20T13:05:55Z
 
 AUTH_ISSUER = "https://auth.aida0710.work/api/auth"
 API_BASE = "https://hosting.aida0710.work/api"
@@ -226,6 +227,21 @@ def main():
     lines.append("")
     lines.append(f"📊 {ok}/{total} 成功")
     lines.append(f"⏱️ {dt}")
+
+    # Cookie 过期时间
+    if AIDA_SESSION_EXPIRY:
+        try:
+            exp = datetime.fromisoformat(AIDA_SESSION_EXPIRY.replace("Z", "+00:00"))
+            remain = exp - datetime.now().astimezone()
+            if remain.total_seconds() > 0:
+                days = remain.days
+                hours = remain.seconds // 3600
+                lines.append(f"🔑 Session: {days}d {hours}h 后过期")
+            else:
+                lines.append(f"🔑 Session: 已过期")
+        except:
+            pass
+
     lines.append(f"🔗 {REPO_URL}")
 
     msg = "\n".join(lines)
