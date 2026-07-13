@@ -250,6 +250,9 @@ def main():
     # Telegram 通知
     ok = sum(1 for r in results if r[1])
     lines = ["🇯🇵 Aida 续期通知", ""]
+    if SOCKS5_PROXY:
+        proxy_host = SOCKS5_PROXY.split("@")[-1] if "@" in SOCKS5_PROXY else SOCKS5_PROXY
+        lines.append(f"🔌 代理: {proxy_host}")
     if masked_email:
         lines.append(f"👤 {username} ({masked_email})")
         lines.append("")
