@@ -2,9 +2,10 @@ name: Aida 自动续期
 
 on:
   schedule:
-    # 每 6 小时执行一次
-    - cron: "0 */6 * * *"
-  workflow_dispatch: # 手动触发
+    # 一天两次，随机打散在 08-12 点和 20-00 点（实际时间由脚本随机偏移）
+    - cron: "0 10 * * *"
+    - cron: "0 22 * * *"
+  workflow_dispatch:
 
 jobs:
   checkin:
@@ -15,6 +16,7 @@ jobs:
       - name: 执行 Aida 续期
         env:
           AIDA_SESSION_TOKEN: ${{ secrets.AIDA_SESSION_TOKEN }}
+          AIDA_SESSION_EXPIRY: ${{ secrets.AIDA_SESSION_EXPIRY }}
           SOCKS5_PROXY: ${{ secrets.SOCKS5_PROXY }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
