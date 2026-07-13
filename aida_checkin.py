@@ -181,11 +181,11 @@ def main():
     print(f"🇯🇵 Aida 自动续期 - {dt}")
     print("=" * 50)
 
-    # 随机延迟 0-180 分钟（打散执行时间，避免被识别为定时任务）
+    # 随机延迟 0-30 分钟（打散执行时间）
     import random, time
-    delay = random.randint(0, 10800)  # 0~3h
+    delay = random.randint(0, 1800)
     if delay > 60:
-        print(f"⏳ 随机延迟 {delay//60}m {delay%60}s...")
+        print(f"⏳ 随机延迟 {delay//60}m...")
         time.sleep(delay)
 
     if not AIDA_SESSION_TOKEN:
